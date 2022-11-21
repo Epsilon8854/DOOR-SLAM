@@ -1,7 +1,9 @@
 FROM lajoiepy/multi_robot_slam:latest
-# Upgrade installed packages
-RUN apt-get update && apt-get upgrade -y && apt-get clean
 
+RUN apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116 && \
+    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
+    apt-get update && \
+    apt-get clean
 # (...)
 
 # Python package management and basic dependencies
@@ -23,9 +25,7 @@ RUN curl -s https://bootstrap.pypa.io/get-pip.py -o get-pip.py && \
 
 WORKDIR /root/
 #     wget http://packages.ros.org/ros.key -O - | apt-key add - && \
-RUN apt-key del 421C365BD9FF1F717815A3895523BAEEB01FA116 && \
-    apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
-    apt-get update
+
 ##################################################### Python catkin tools #####################################################
 RUN apt-get update && apt-get install -y --no-install-recommends libopenni2-dev wget && \
     sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list' && \
