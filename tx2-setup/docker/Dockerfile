@@ -18,11 +18,11 @@ COPY tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl /tmp/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends python-dev python-pip python-h5py python-wheel && \
-    pip install /tmp/tensorflow-1.11.0-cp27-cp27mu-linux_aarch64.whl && \
+    pip install /tmp/tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl && \
     pip install --upgrade numpy && \
     apt-get install -y --no-install-recommends python-scipy && \
     apt-get remove -y python-pip python-wheel && \
-    rm /tmp/tensorflow-1.11.0-cp27-cp27mu-linux_aarch64.whl && \
+    rm /tmp/tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl && \
     rm -rf /var/lib/apt/lists/*
 
 ##################################################### GTSAM #####################################################
