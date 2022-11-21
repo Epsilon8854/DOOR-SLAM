@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libopenni2-dev 
     rm -rf /var/lib/apt/lists/*
 
 ##################################################### Tensorflow #####################################################
-COPY tensorflow-1.11.0-cp27-cp27mu-linux_aarch64.whl /tmp/
+COPY tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl /tmp/
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends python-dev python-pip python-h5py python-wheel && \
