@@ -16,9 +16,11 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.6 1
 RUN update-alternatives --set python /usr/bin/python3.6
 
 # # Upgrade pip to latest version
-RUN apt-get install python3-pip && \
-    ln -s /bin/pip3.6 /bin/pip
+RUN apt-get install python3-pip -y && \    
+ln -s /bin/pip3.6 /bin/pip && \
+python -m pip install --upgrade pip
 
+RUN apt-get install build-essential python-dev
 
 WORKDIR /root/
 #     wget http://packages.ros.org/ros.key -O - | apt-key add - && \
@@ -35,9 +37,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends libopenni2-dev 
 COPY tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl /tmp/
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends python-dev python-pip python-h5py python-wheel && \
-    pip install /tmp/tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl && \
+    apt-get install -y --no-install-recommends python-dev python-pip python-wheel && \
+pip install --upgrade pip setuptools wheel
+RUN pip install -U cython
+RUN apt install -y python3-h5py
+RUN pip install /tmp/tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl && \
     pip install --upgrade numpy && \
+pip install wrapt && \
     apt-get install -y --no-install-recommends python-scipy && \
     apt-get remove -y python-pip python-wheel && \
     rm /tmp/tensorflow_gpu-1.15.0+nv19.12-cp36-cp36m-linux_aarch64.whl && \
