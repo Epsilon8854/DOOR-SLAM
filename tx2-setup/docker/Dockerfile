@@ -60,7 +60,10 @@ RUN git clone https://bitbucket.org/gtborg/gtsam  && \
     cd ../.. && \
     rm -rf gtsam && \
     ldconfig
-
+RUN pip install catkin-pkg && \
+pip install rospkg && \
+pip install pycryptodomex &&\
+pip install gnupg
 ##################################################### RTAB-Map ROS #####################################################
 RUN apt-get update && apt-get install -y \
     ros-melodic-rtabmap-ros \
@@ -70,7 +73,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-RUN git clone https://github.com/introlab/rtabmap.git && \
+RUN git clone https://github.com/introlab/rtabmap --branch noetic-devel && \
     source /ros_entrypoint.sh && \
     cd rtabmap/build && \
     cmake .. && \
@@ -80,15 +83,19 @@ RUN git clone https://github.com/introlab/rtabmap.git && \
     rm -rf rtabmap && \
     ldconfig
 
+
+    
 RUN source /ros_entrypoint.sh && \
     mkdir -p catkin_ws/src && \
     cd catkin_ws/src && \
-    git clone https://github.com/bramtoula/rtabmap_ros.git && \
+    git clone https://github.com/introlab/rtabmap_ros --branch melodic-devel && \
     cd .. && \
     catkin_make -j2 -DCMAKE_INSTALL_PREFIX=/opt/ros/melodic install && \
     cd && \
     rm -rf catkin_ws
 
+
+# RUN source /opt/ros/melodic/setup.bash && catkin build 
 ##################################################### Buzz #####################################################
 RUN git clone https://github.com/MISTLab/Buzz.git /home/docker/buzz && \
     cd /home/docker/buzz && \
@@ -102,47 +109,47 @@ RUN git clone https://github.com/MISTLab/Buzz.git /home/docker/buzz && \
 
 ##################################################### DJI SDK #############################################################
 # # Install DJI_SDK
-# RUN apt-get update && apt-get install -y ros-melodic-nmea-msgs \
-#     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ros-melodic-nmea-msgs \
+     && rm -rf /var/lib/apt/lists/*
 
-# ARG clone_dji_sdk=unknown
+ARG clone_dji_sdk=unknown
 
-# RUN mkdir ~/dji_ws && mkdir ~/dji_ws/src && cd ~/dji_ws/src &&\
-#     git clone https://github.com/lajoiepy/Onboard-SDK-ROS onboard-sdk-ros &&\
-#     cd onboard-sdk-ros &&\
-#     git checkout m100_record
+RUN mkdir ~/dji_ws && mkdir ~/dji_ws/src && cd ~/dji_ws/src &&\
+     git clone https://github.com/lajoiepy/Onboard-SDK-ROS onboard-sdk-ros &&\
+     cd onboard-sdk-ros &&\
+     git checkout m100_record
 
-# RUN cd ~/dji_ws &&\
-#     source /opt/ros/melodic/setup.bash &&\
-#     catkin build
+RUN cd ~/dji_ws &&\
+     source /opt/ros/melodic/setup.bash &&\
+     catkin build
 
 ##################################################### Multi-robot SLAM separators package #####################################################
 # --------------------------------------------------- Reset argument ------------------------------------------#
 ARG rebuild_multi_robot_slam_separators=0
 # -------------------------------------------------------------------------------------------------------------#
 
-RUN git clone https://github.com/bramtoula/multi_robot_SLAM_separators.git  && \
-    cd multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts && \
-    git clone https://github.com/uzh-rpg/netvlad_tf_open.git && \
-    cd netvlad_tf_open/checkpoints && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends unzip wget && \
-    wget http://rpg.ifi.uzh.ch/datasets/netvlad/vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \
-    unzip vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \ 
-    mv vd16_pitts30k_conv5_3_vlad_preL2_intra_white/* . && \
-    rm -r vd16_pitts30k_conv5_3_vlad_preL2_intra_white && \
-    rm vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \
-    apt-get remove -y unzip wget && \
-    rm -rf /var/lib/apt/lists/* && \
-    cd ~/multi_robot_SLAM_separators/ros_ws && \
-    source ~/dji_ws/devel/setup.bash && \
-    catkin build && \
-    source devel/setup.bash && \
-    mkdir ~/multi_robot_SLAM_separators/logs && \
-    mkdir ~/multi_robot_SLAM_separators/bags && \
-    chmod +x  ~/multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts/find_separators.py 
+# RUN git clone https://github.com/bramtoula/multi_robot_SLAM_separators.git  && \
+#RUN cd multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts && \
+    #git clone https://github.com/uzh-rpg/netvlad_tf_open.git && \
+ #   cd netvlad_tf_open/checkpoints && \
+  #  apt-get update && \
+ #   apt-get install -y --no-install-recommends unzip wget && \
+ #  wget http://rpg.ifi.uzh.ch/datasets/netvlad/vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \
+ #   unzip vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \ 
+ #   mv vd16_pitts30k_conv5_3_vlad_preL2_intra_white/* . && \
+ #   rm -r vd16_pitts30k_conv5_3_vlad_preL2_intra_white && \
+ #   rm vd16_pitts30k_conv5_3_vlad_preL2_intra_white.zip && \
+ #   apt-get remove -y unzip wget && \
+ #   rm -rf /var/lib/apt/lists/* && \
+ #   cd ~/multi_robot_SLAM_separators/ros_ws && \
+ #   source ~/dji_ws/devel/setup.bash && \
+ #   catkin build && \
+ #   source devel/setup.bash && \
+ #   mkdir ~/multi_robot_SLAM_separators/logs && \
+ #   mkdir ~/multi_robot_SLAM_separators/bags && \
+#    chmod +x  ~/multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts/find_separators.py 
 
-ENV PYTHONPATH=":PYTHONPATH:/root/multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts/netvlad_tf_open/python"
+# ENV PYTHONPATH=":PYTHONPATH:/root/multi_robot_SLAM_separators/ros_ws/src/multi_robot_separators/scripts/netvlad_tf_open/python"
 
 ##################################################### Robust Distributed Mapper - RDPGO - Buzz SLAM #####################################################
 # --------------------------------------------------- Reset argument ------------------------------------------#
